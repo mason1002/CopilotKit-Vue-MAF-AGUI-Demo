@@ -7,7 +7,7 @@ from uuid import uuid4
 
 import jwt
 from agent_framework import Agent, ChatResponse, ChatResponseUpdate, Content, Message, ResponseStream
-from agent_framework_ag_ui import add_agent_framework_fastapi_endpoint
+from agent_framework.ag_ui import add_agent_framework_fastapi_endpoint
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -79,7 +79,7 @@ class DeterministicChatClient:
         route = "directly from Vue"
         text = (
             f"Vue + Agent Framework connection confirmed for {identity}. "
-            f"The Python MAF Agent received: '{prompt}'. "
+            f"The Python Agent Framework agent received: '{prompt}'. "
             f"The request traveled {route} and returned as an AG-UI event stream."
         )
         response_id = str(uuid4())

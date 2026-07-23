@@ -41,7 +41,7 @@ let tokenTimer: ReturnType<typeof setInterval> | undefined
 
 const flowSteps = [
   { key: 'vue', eyebrow: 'Browser', title: 'Vue 3', detail: 'CopilotKit UI', icon: Activity },
-  { key: 'agent', eyebrow: 'Agent host', title: 'Python Agent', detail: 'FastAPI · :8100', icon: Server },
+  { key: 'agent', eyebrow: 'Agent host', title: 'Python Agent', detail: 'FastAPI + AG-UI · :8100', icon: Server },
   { key: 'model', eyebrow: 'In process', title: 'Local client', detail: 'Deterministic reply', icon: Cpu },
 ]
 const activeTelemetry = computed(() => trace.value)
@@ -259,6 +259,7 @@ onBeforeUnmount(() => {
           <div class="status-row"><ShieldCheck /><span>JWT sent directly by Vue</span><span class="status-value passed"><Check :size="14" />{{ token ? 'Ready' : 'Waiting' }}</span></div>
           <div class="status-row"><KeyRound /><span>Browser token scope</span><span class="status-value passed"><Check :size="14" />15 min</span></div>
           <div class="status-row"><Server /><span>Active model</span><span class="status-value">Local deterministic</span></div>
+          <div class="status-row"><Server /><span>Backend adapter</span><span class="status-value">Agent Framework AG-UI</span></div>
           <div class="status-row"><Activity /><span>Direct Agent requests</span><span class="status-value">{{ trace.requests }}</span></div>
           <div class="status-row"><Server /><span>Intermediary service</span><span class="status-value">None</span></div>
         </div>

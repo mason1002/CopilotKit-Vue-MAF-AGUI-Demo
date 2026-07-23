@@ -15,6 +15,60 @@ Deterministic local client
 
 Use the deterministic client to reproduce the full request path without an external model account, API key, or usage charge.
 
+## Identify The Agent Framework Adapter
+
+Use the `agent-framework-ag-ui` package as the Agent Framework equivalent of a LangGraph AG-UI adapter. The FastAPI registration helper accepts a native Agent Framework `Agent` or `Workflow`, translates AG-UI requests into framework runs, and streams framework events back as AG-UI SSE events.
+
+| Agent backend | AG-UI integration shape |
+| --- | --- |
+| LangGraph | Wrap or expose a compiled graph through its AG-UI adapter. |
+| Agent Framework | Call `add_agent_framework_fastapi_endpoint(app, agent, "/agent")`. |
+
+Do not add a Copilot Runtime adapter just to perform protocol conversion. The Agent Framework package already provides message conversion, event bridging, streaming, state, thread snapshots, interrupt and resume support, and FastAPI endpoint registration.
+
+Use the preferred application import:
+
+```python
+from agent_framework.ag_ui import add_agent_framework_fastapi_endpoint
+```
+
+The direct package import from `agent_framework_ag_ui` remains supported, but the framework facade above is the preferred public path.
+
+## Distinguish Runtime From Direct Mode
+
+Treat `runtimeUrl` and `selfManagedAgents` as two different architectures:
+
+| Provider configuration | Browser destination | Copilot Runtime | Agent selection |
+| --- | --- | --- | --- |
+| `runtime-url="http://localhost:9000/copilotkit"` | `/copilotkit` | Present | Runtime discovery and routing |
+| `:self-managed-agents="{ 'direct-agent': agent }"` | FastAPI `/agent` | Absent | Explicit browser-side registration |
+
+The CopilotKit Vue Agent Framework quickstart currently demonstrates the first row. Its `runtime-url` example and `/copilotkit/info` route are Runtime architecture, even when the downstream agent is exposed through AG-UI.
+
+This repository demonstrates the second row. It does not install `@copilotkit/runtime`, expose `/copilotkit` or `/copilotkit/info`, use `CopilotKitRemoteEndpoint`, or add a runtime-specific Agent Framework wrapper.
+
+Use this request path:
+
+```text
+Vue CopilotKitProvider(selfManagedAgents)
+  -> @ag-ui/client HttpAgent
+  -> POST FastAPI /agent
+  -> add_agent_framework_fastapi_endpoint
+  -> Agent Framework Agent
+  -> chat client
+```
+
+Do not use this Runtime path when the goal is direct connection:
+
+```text
+Vue CopilotKitProvider(runtimeUrl)
+  -> POST /copilotkit
+  -> Copilot Runtime discovery and routing
+  -> remote AG-UI agent
+```
+
+Read the CopilotKit documentation section about connecting directly to an AG-UI agent and use `selfManagedAgents`, not the development-only `agents__unsafe_dev_only` API. Confirm the applicable product license and feature limitations before production use.
+
 ## Prerequisites
 
 Install these tools before continuing:
@@ -97,6 +151,7 @@ The script does not start an intermediary agent service. It performs these check
 - reject missing and invalid bearer tokens;
 - verify the AG-UI SSE event sequence;
 - confirm the browser posts only to `/agent`;
+- confirm `/copilotkit` Runtime routes do not exist;
 - confirm the chat displays the streamed response;
 - confirm the desktop layout has no horizontal overflow.
 
@@ -130,7 +185,7 @@ Register the client with the Vue provider:
 Expose the Python Agent through the AG-UI adapter:
 
 ```python
-from agent_framework_ag_ui import add_agent_framework_fastapi_endpoint
+from agent_framework.ag_ui import add_agent_framework_fastapi_endpoint
 
 add_agent_framework_fastapi_endpoint(app, agent, "/agent")
 ```
@@ -204,6 +259,8 @@ scripts/
 
 - Use the local token issuer only for demonstration.
 - Implement persistent thread storage in the application when required.
+- Add explicit endpoint selection or an application-owned registry when exposing multiple agents.
+- Validate shared state, frontend tools, human approval, interrupt/resume, and cancellation before enabling those features.
 - Implement production authorization, rate limits, audit, and content controls separately.
 - Confirm the applicable license before using `selfManagedAgents` in production.
 - Expect a large frontend bundle because the prebuilt chat package includes optional rendering features.

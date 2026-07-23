@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 
 test('Vue calls the Agent endpoint directly', async ({ page }) => {
+  const requestedUrls: string[] = []
+  page.on('request', (request) => requestedUrls.push(request.url()))
   await page.goto('/?scoutTheme=light')
   await expect(page.getByText('Service online')).toBeVisible()
   await expect(page.locator('.flow-node')).toHaveCount(3)
@@ -19,7 +21,9 @@ test('Vue calls the Agent endpoint directly', async ({ page }) => {
   await expect(page.getByText('RUN_FINISHED')).toBeVisible()
   await expect(page.getByText(/directly from Vue/)).toBeVisible()
   await expect(page.getByText('Intermediary service')).toBeVisible()
+  await expect(page.getByText('Agent Framework AG-UI')).toBeVisible()
   await expect(page.locator('.run-facts')).not.toContainText('REQUEST ID\n—')
+  expect(requestedUrls.some((url) => new URL(url).pathname.startsWith('/copilotkit'))).toBe(false)
 
 })
 

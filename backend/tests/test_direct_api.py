@@ -77,6 +77,14 @@ def test_direct_agent_rejects_invalid_bearer_token() -> None:
     assert response.json() == {"detail": "Invalid bearer token"}
 
 
+def test_direct_app_exposes_agent_without_runtime_routes() -> None:
+    paths = app.openapi()["paths"]
+
+    assert "/agent" in paths
+    assert "/copilotkit" not in paths
+    assert "/copilotkit/info" not in paths
+
+
 def test_direct_local_agent_returns_complete_agui_stream() -> None:
     response = client.post(
         "/agent",
