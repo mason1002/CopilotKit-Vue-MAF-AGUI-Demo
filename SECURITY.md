@@ -1,29 +1,30 @@
-# Security
+# 安全说明
 
-## Scope
+## 适用范围
 
-Use this repository as an integration demo. Do not treat the local token issuer, default secret, or in-memory client as production controls.
+本仓库仅用于集成演示。请勿将本地 Token 签发接口、默认 Secret 或内存客户端视为生产安全控制。
 
-Keep the default services bound to loopback. Do not expose the default configuration to an untrusted network.
+保持默认服务仅绑定 Loopback 地址。不要将默认配置暴露到不可信网络。
 
-## Deployment Checklist
+## 部署检查清单
 
-Complete these actions before deployment:
+部署前完成以下操作：
 
-- replace `/demo-token` with a trusted identity provider;
-- validate issuer, audience, signature, expiry, and subject on every request;
-- rebuild tenant, role, data scope, and tool permissions from a trusted server-side source;
-- bind every thread and continuation operation to its authenticated owner;
-- authorize each tool before reading or changing data;
-- add rate, concurrency, body-size, duration, and output limits;
-- enable HTTPS and restrict CORS to exact origins;
-- add audit events without recording raw tokens or sensitive content;
-- map internal exceptions to generic external errors;
-- place the Agent endpoint behind a trusted BFF or API gateway when possible;
-- review dependency advisories and the applicable product licenses.
+- 将 `/demo-token` 替换为可信身份提供商；
+- 对每个请求验证 Issuer、Audience、签名、过期时间和 Subject；
+- 从可信服务端数据源重建 Tenant、Role、数据范围和 Tool 权限；
+- 将所有 Thread 和延续操作绑定到已认证 Owner；
+- 在读取或修改数据前授权每一次 Tool 调用；
+- 添加请求频率、并发数、请求体大小、执行时间和输出限制；
+- 启用 HTTPS，并将 CORS 限制为准确的 Origin；
+- 记录审计事件，但不要记录原始 Token 或敏感内容；
+- 将内部异常映射为通用外部错误；
+- 尽可能将 Agent 接口置于可信 BFF 或 API Gateway 之后；
+- 检查依赖安全公告和适用的产品许可证；
+- 在生产环境使用 `selfManagedAgents` 前确认 Enterprise Intelligence 许可和费用。
 
-Do not commit `.env` files, access tokens, private keys, private license tokens, user data, or generated traces containing sensitive data.
+不要提交 `.env` 文件、Access Token、Private Key、私密 License Token、用户数据或包含敏感信息的生成 Trace。
 
-## Reporting
+## 漏洞报告
 
-Enable private vulnerability reporting in the repository settings before accepting external users. Publish a security contact when the project gains maintainers.
+在接受外部用户之前，请在仓库设置中启用私有漏洞报告。项目建立维护团队后，发布安全联系人和响应流程。
